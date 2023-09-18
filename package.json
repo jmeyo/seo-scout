@@ -1,0 +1,11 @@
+{
+  "name": "seo-scout",
+  "version": "0.1.0",
+  "description": "SEO analysis tool",
+  "main": "src/index.js",
+  "bin": {"seo-scout": "./bin/seo-scout.js"},
+  "scripts": {"start": "node bin/seo-scout.js"},
+  "keywords": ["seo", "analysis"],
+  "author": "SEO Scout Contributors",
+  "license": "MIT"
+}
