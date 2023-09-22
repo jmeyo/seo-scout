@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "bin": {"seo-scout": "./bin/seo-scout.js"},
   "scripts": {"start": "node bin/seo-scout.js"},
-  "keywords": ["seo", "analysis"],
+  "keywords": ["seo"],
   "author": "SEO Scout Contributors",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {"commander": "^11.1.0"}
 }
