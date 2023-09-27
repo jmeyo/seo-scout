@@ -1,12 +1,15 @@
 {
   "name": "seo-scout",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SEO analysis tool",
   "main": "src/index.js",
   "bin": {"seo-scout": "./bin/seo-scout.js"},
   "scripts": {"start": "node bin/seo-scout.js"},
-  "keywords": ["seo"],
+  "keywords": ["seo", "sitemap"],
   "author": "SEO Scout Contributors",
   "license": "MIT",
-  "dependencies": {"commander": "^11.1.0"}
+  "dependencies": {
+    "axios": "^1.6.0",
+    "commander": "^11.1.0"
+  }
 }
