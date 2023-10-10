@@ -1,15 +1,16 @@
 {
   "name": "seo-scout",
-  "version": "0.2.0",
-  "description": "SEO analysis tool",
+  "version": "0.3.0",
+  "description": "SEO analysis tool with meta tags extraction",
   "main": "src/index.js",
   "bin": {"seo-scout": "./bin/seo-scout.js"},
   "scripts": {"start": "node bin/seo-scout.js"},
-  "keywords": ["seo", "sitemap"],
+  "keywords": ["seo", "sitemap", "meta-tags"],
   "author": "SEO Scout Contributors",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
     "commander": "^11.1.0",
     "xml2js": "^0.6.2"
   }
