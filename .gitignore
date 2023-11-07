@@ -1,3 +1,11 @@
 node_modules/
+.seo-scout.json
 *.log
 .DS_Store
+coverage/
+dist/
+*.html
+*.json
+*.csv
+!package.json
+.lighthouseci/

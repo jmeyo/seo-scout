@@ -1,7 +1,7 @@
 {
   "name": "seo-scout",
-  "version": "0.3.0",
-  "description": "SEO analysis tool with meta tags extraction",
+  "version": "0.4.0",
+  "description": "Comprehensive SEO analysis tool",
   "main": "src/index.js",
   "bin": {"seo-scout": "./bin/seo-scout.js"},
   "scripts": {"start": "node bin/seo-scout.js"},
@@ -12,6 +12,7 @@
     "axios": "^1.6.0",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
     "xml2js": "^0.6.2"
   }
 }
