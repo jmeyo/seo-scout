@@ -30,13 +30,13 @@ npm install
 
 ```bash
 # Analyze site from sitemap
-./bin/seo-scout.js analyze https://gaylovespirit.org
+./bin/seo-scout.js analyze https://example.com
 
 # Analyze specific page
-./bin/seo-scout.js analyze https://gaylovespirit.org/calendar/en --single
+./bin/seo-scout.js analyze https://example.com/calendar/en --single
 
 # With Lighthouse audit
-./bin/seo-scout.js analyze https://gaylovespirit.org --lighthouse
+./bin/seo-scout.js analyze https://example.com --lighthouse
 ```
 
 ### Symfony Integration
@@ -78,7 +78,7 @@ npm install
 
 ```bash
 # Check all main pages
-./bin/seo-scout.js analyze https://gaylovespirit.org
+./bin/seo-scout.js analyze https://example.com
 ```
 
 **Output:**
@@ -87,7 +87,7 @@ npm install
 ║                    SEO Scout Analysis                          ║
 ╚════════════════════════════════════════════════════════════════╝
 
-Site: https://gaylovespirit.org
+Site: https://example.com
 Pages analyzed: 47
 Generated: 2025-11-28
 
@@ -98,7 +98,7 @@ Generated: 2025-11-28
 │ Meta Description: Discover tantra workshops, retreats, and...  │
 │ Open Graph: ✓ Present                                          │
 │ Twitter Card: ✓ summary_large_image                            │
-│ Canonical: ✓ https://gaylovespirit.org/                        │
+│ Canonical: ✓ https://example.com/                        │
 │ Schema.org: ✓ Organization                                     │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -125,8 +125,8 @@ Comparing SEO changes: abc123 → def456
 
 Homepage (/)
   Title:
-    - Before: Gay Love Spirit - Gay Love Spirit (DE)
-    + After:  Gay Tantra Workshops & Retreats for Men | Gay Love Spirit
+    - Before: Example Project - Example Project (DE)
+    + After:  Gay Tantra Workshops & Retreats for Men | Example Project
 
   Meta Description:
     - Before: An international network of trainers and healers
@@ -148,7 +148,7 @@ Create `.seo-scout.json` in your project root:
 
 ```json
 {
-  "sitemapUrl": "https://gaylovespirit.org/sitemap.xml",
+  "sitemapUrl": "https://example.com/sitemap.xml",
   "symfony": {
     "envPath": "../",
     "environments": ["dev", "staging", "prod"]
