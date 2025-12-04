@@ -90,8 +90,20 @@ class SeoScout {
         }
       }
 
-      // Apply limit if specified
-      if (options.limit) {
+      // Apply random sampling if specified
+      if (options.random && pages.length > 0) {
+        const sampleSize = Math.min(options.random, pages.length);
+        // Fisher-Yates shuffle and take first N items
+        const shuffled = [...pages];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        pages = shuffled.slice(0, sampleSize);
+      }
+
+      // Apply limit if specified (after random sampling)
+      if (options.limit && !options.random) {
         pages = pages.slice(0, options.limit);
       }
 

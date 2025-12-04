@@ -20,6 +20,7 @@ program
   .option('-f, --format <format>', 'Output format (console/json/csv/html)', 'console')
   .option('-o, --output <file>', 'Output file path')
   .option('--limit <number>', 'Limit number of pages to analyze', parseInt)
+  .option('--random <number>', 'Randomly sample N pages from sitemap', parseInt)
   .option('--match <patterns...>', 'Only analyze sitemap URLs containing these substrings (case-insensitive)')
   .option('--delay <ms>', 'Delay between page requests in ms', parseInt)
   .option('--fail-on-errors', 'Exit with non-zero status if any pages fail', false)
@@ -47,6 +48,7 @@ program
         single: options.single,
         lighthouse: options.lighthouse,
         limit: options.limit,
+        random: options.random,
         delay: options.delay,
         match: options.match
       });
