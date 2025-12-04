@@ -449,6 +449,8 @@ class SeoScout {
   async report(results, options = {}) {
     const format = options.format || 'console';
     const reporter = this.reporters[format];
+    const fs = require('fs').promises;
+    const path = require('path');
 
     if (!reporter) {
       throw new Error(`Unknown report format: ${format}`);
@@ -456,8 +458,36 @@ class SeoScout {
 
     const output = await reporter.generate(results, options);
 
+    // Always save JSON backup unless explicitly disabled
+    if (options.autoSaveJson !== false && format !== 'json') {
+      const jsonReporter = this.reporters['json'];
+      const jsonOutput = await jsonReporter.generate(results, options);
+
+      // Determine JSON filename
+      let jsonPath;
+      if (options.output) {
+        const parsed = path.parse(options.output);
+        jsonPath = path.join(parsed.dir, `${parsed.name}.json`);
+      } else {
+        // Default: reports/seo-{env}-{timestamp}.json
+        const reportsDir = path.join(this.projectRoot, 'reports');
+        try {
+          await fs.mkdir(reportsDir, { recursive: true });
+        } catch (e) {
+          // Directory might exist
+        }
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const envHint = results.url ? new URL(results.url).hostname.split('.')[0] : 'scan';
+        jsonPath = path.join(reportsDir, `seo-${envHint}-${timestamp}.json`);
+      }
+
+      await fs.writeFile(jsonPath, jsonOutput);
+      console.log(`\nJSON backup saved to: ${jsonPath}`);
+    }
+
+    // Save primary output
     if (options.output) {
-      const fs = require('fs').promises;
       await fs.writeFile(options.output, output);
       console.log(`\nReport saved to: ${options.output}`);
     } else if (format === 'console') {
