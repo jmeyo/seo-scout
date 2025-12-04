@@ -34,10 +34,20 @@ class SitemapAnalyzer {
     const sitemaps = sitemapindex.sitemap || [];
     const allUrls = [];
 
+    // Parse base URL to extract scheme, host, and port
+    const baseUrlObj = new URL(baseUrl);
+    const baseOrigin = baseUrlObj.origin; // includes scheme, host, and port
+
     for (const sitemap of sitemaps) {
       const sitemapLoc = sitemap.loc[0];
       try {
-        const urls = await this.parse(sitemapLoc);
+        // Rewrite subsitemap URL to use same origin (host:port) as base URL
+        const subsitemapUrl = new URL(sitemapLoc, baseOrigin);
+        subsitemapUrl.protocol = baseUrlObj.protocol;
+        subsitemapUrl.host = baseUrlObj.host; // includes hostname and port
+
+        const normalizedUrl = subsitemapUrl.toString();
+        const urls = await this.parse(normalizedUrl);
         allUrls.push(...urls);
       } catch (error) {
         console.error(`Warning: Failed to parse subsitemap ${sitemapLoc}: ${error.message}`);
