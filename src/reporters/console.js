@@ -20,6 +20,11 @@ class ConsoleReporter {
     console.log(chalk.blue(`Duration: ${(results.duration / 1000).toFixed(2)}s`));
     console.log(chalk.blue(`Generated: ${new Date(results.timestamp).toLocaleString()}\n`));
 
+    // Show errors first if any exist
+    if (results.errors && results.errors.length > 0) {
+      this.printErrorsByType(results.errors);
+    }
+
     // Summary statistics
     this.printSummary(results.summary);
 
@@ -35,6 +40,41 @@ class ConsoleReporter {
 
     // Overall assessment
     this.printAssessment(results.summary);
+  }
+
+  printErrorsByType(errors) {
+    console.log(chalk.bold.red(`\n${'═'.repeat(80)}`));
+    console.log(chalk.bold.red(`⚠ ERRORS FOUND: ${errors.length} pages failed`));
+    console.log(chalk.bold.red(`${'═'.repeat(80)}\n`));
+
+    // Group errors by status code
+    const errorsByType = {};
+    errors.forEach(error => {
+      const key = error.status ? `HTTP ${error.status}` : 'Connection Error';
+      if (!errorsByType[key]) {
+        errorsByType[key] = [];
+      }
+      errorsByType[key].push(error);
+    });
+
+    // Print each error type with pages
+    Object.keys(errorsByType).sort().forEach(errorType => {
+      const errorList = errorsByType[errorType];
+      const statusColor = errorType.includes('404') ? chalk.yellow :
+                         errorType.includes('500') || errorType.includes('503') ? chalk.red :
+                         chalk.magenta;
+
+      console.log(statusColor.bold(`${errorType}: ${errorList.length} page(s)`));
+      console.log(statusColor(`${'─'.repeat(80)}`));
+
+      errorList.forEach((error, idx) => {
+        console.log(statusColor(`  ${idx + 1}. ${error.url}`));
+        if (error.message && !error.message.includes('HTTP')) {
+          console.log(chalk.dim(`     ${error.message}`));
+        }
+      });
+      console.log();
+    });
   }
 
   printSummary(summary) {

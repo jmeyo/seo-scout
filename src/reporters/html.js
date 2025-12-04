@@ -198,6 +198,8 @@ class HtmlReporter {
       </div>
     </div>
 
+    ${results.errors && results.errors.length > 0 ? this.renderErrorSection(results.errors) : ''}
+
     ${summary.duplicateDescriptions.length > 0 ? `
     <div class="pages">
       <h2>Duplicate Descriptions</h2>
@@ -235,6 +237,56 @@ class HtmlReporter {
     `;
 
     return html.trim();
+  }
+
+  renderErrorSection(errors) {
+    // Group errors by status code
+    const errorsByType = {};
+    errors.forEach(error => {
+      const key = error.status ? `HTTP ${error.status}` : 'Connection Error';
+      if (!errorsByType[key]) {
+        errorsByType[key] = [];
+      }
+      errorsByType[key].push(error);
+    });
+
+    return `
+    <div class="pages" style="background: #fff3cd; padding: 30px; border-left: 4px solid #dc3545;">
+      <h2 style="color: #dc3545; margin-bottom: 20px;">⚠ Errors Found: ${errors.length} pages failed</h2>
+      ${Object.keys(errorsByType).sort().map(errorType => {
+        const errorList = errorsByType[errorType];
+        const badgeClass = errorType.includes('404') ? 'badge-warning' :
+                          errorType.includes('500') || errorType.includes('503') ? 'badge-error' : 'badge-error';
+
+        return `
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #721c24; margin-bottom: 10px;">
+            <span class="badge ${badgeClass}" style="font-size: 1em; padding: 5px 12px;">${errorType}</span>
+            <span style="font-size: 0.9em; font-weight: normal; margin-left: 10px;">${errorList.length} page(s)</span>
+          </h3>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 60px;">#</th>
+                <th>URL</th>
+                <th style="width: 200px;">Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${errorList.map((error, idx) => `
+              <tr>
+                <td>${idx + 1}</td>
+                <td style="word-break: break-all;">${this.escape(error.url)}</td>
+                <td><span class="badge ${badgeClass}">${error.status || 'Error'}</span></td>
+              </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        `;
+      }).join('')}
+    </div>
+    `;
   }
 
   renderPage(page) {

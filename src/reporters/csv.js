@@ -6,6 +6,8 @@ class CsvReporter {
 
     const headers = [
       'URL',
+      'Status',
+      'Error Type',
       'Title',
       'Title Length',
       'Meta Description',
@@ -26,11 +28,14 @@ class CsvReporter {
       const { url, meta, checks, structuredData, lastmod } = page;
 
       if (meta.error) {
+        const errorType = meta.statusCode ? `HTTP ${meta.statusCode}` : 'Connection Error';
         rows.push([
           url,
+          'FAILED',
+          errorType,
           'ERROR',
           '',
-          meta.message,
+          meta.message || '',
           '',
           '',
           '',
@@ -46,6 +51,8 @@ class CsvReporter {
 
       rows.push([
         url,
+        'OK',
+        '',
         this.escape(meta.title || ''),
         meta.title ? meta.title.length : 0,
         this.escape(meta.description || ''),
