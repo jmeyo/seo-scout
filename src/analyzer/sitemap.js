@@ -6,7 +6,7 @@ class SitemapAnalyzer {
     this.parser = new xml2js.Parser();
   }
 
-  async parse(sitemapUrl) {
+  async parse(sitemapUrl, baseOrigin = null) {
     try {
       const response = await axios.get(sitemapUrl, {
         timeout: 10000,
@@ -17,11 +17,17 @@ class SitemapAnalyzer {
 
       const result = await this.parser.parseStringPromise(response.data);
 
+      // Extract origin from the current sitemap URL if not provided
+      if (!baseOrigin) {
+        const urlObj = new URL(sitemapUrl);
+        baseOrigin = urlObj.origin;
+      }
+
       // Check if it's a sitemap index or a regular sitemap
       if (result.sitemapindex) {
-        return this.parseSitemapIndex(result.sitemapindex, sitemapUrl);
+        return this.parseSitemapIndex(result.sitemapindex, sitemapUrl, baseOrigin);
       } else if (result.urlset) {
-        return this.parseUrlset(result.urlset);
+        return this.parseUrlset(result.urlset, baseOrigin);
       } else {
         throw new Error('Invalid sitemap format');
       }
@@ -30,13 +36,12 @@ class SitemapAnalyzer {
     }
   }
 
-  async parseSitemapIndex(sitemapindex, baseUrl) {
+  async parseSitemapIndex(sitemapindex, baseUrl, baseOrigin) {
     const sitemaps = sitemapindex.sitemap || [];
     const allUrls = [];
 
     // Parse base URL to extract scheme, host, and port
     const baseUrlObj = new URL(baseUrl);
-    const baseOrigin = baseUrlObj.origin; // includes scheme, host, and port
 
     for (const sitemap of sitemaps) {
       const sitemapLoc = sitemap.loc[0];
@@ -47,7 +52,7 @@ class SitemapAnalyzer {
         subsitemapUrl.host = baseUrlObj.host; // includes hostname and port
 
         const normalizedUrl = subsitemapUrl.toString();
-        const urls = await this.parse(normalizedUrl);
+        const urls = await this.parse(normalizedUrl, baseOrigin);
         allUrls.push(...urls);
       } catch (error) {
         console.error(`Warning: Failed to parse subsitemap ${sitemapLoc}: ${error.message}`);
@@ -57,14 +62,31 @@ class SitemapAnalyzer {
     return allUrls;
   }
 
-  parseUrlset(urlset) {
+  parseUrlset(urlset, baseOrigin) {
     const urls = urlset.url || [];
-    return urls.map(url => ({
-      loc: url.loc[0],
-      lastmod: url.lastmod ? url.lastmod[0] : null,
-      changefreq: url.changefreq ? url.changefreq[0] : null,
-      priority: url.priority ? parseFloat(url.priority[0]) : null
-    }));
+    return urls.map(url => {
+      let loc = url.loc[0];
+
+      // Rewrite URL to use the same origin (host:port) as the base URL
+      if (baseOrigin) {
+        try {
+          const urlObj = new URL(loc);
+          const baseUrlObj = new URL(baseOrigin);
+          urlObj.protocol = baseUrlObj.protocol;
+          urlObj.host = baseUrlObj.host; // includes hostname and port
+          loc = urlObj.toString();
+        } catch (e) {
+          // If URL parsing fails, keep original
+        }
+      }
+
+      return {
+        loc,
+        lastmod: url.lastmod ? url.lastmod[0] : null,
+        changefreq: url.changefreq ? url.changefreq[0] : null,
+        priority: url.priority ? parseFloat(url.priority[0]) : null
+      };
+    });
   }
 }
 
