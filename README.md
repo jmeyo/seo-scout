@@ -10,8 +10,11 @@ npm install
 
 ## Quick start
 ```bash
+# Random sampling - quick health check (20 random pages)
+./bin/seo-scout.js analyze --env staging --random 20 --delay 100
+
 # Analyze staging (auto URL from .env.staging), limit pages, throttle
-DELAY_MS=300 MATCH=contact,event ./bin/seo-scout.js analyze --env staging --limit 15
+./bin/seo-scout.js analyze --env staging --limit 15 --delay 300
 
 # Full sitemap
 ./bin/seo-scout.js analyze --env staging
@@ -25,8 +28,9 @@ DELAY_MS=300 MATCH=contact,event ./bin/seo-scout.js analyze --env staging --limi
 
 Key flags:
 - `--env <env>`: use Symfony env (`dev|staging|prod`) to auto-detect base URL
+- `--random <n>`: randomly sample N pages from sitemap (unbiased selection)
 - `--match <substr...>`: only URLs containing these substrings (case-insensitive)
-- `--limit <n>`: limit number of pages
+- `--limit <n>`: limit number of pages (first N after filtering)
 - `--delay <ms>`: throttle between page requests
 - `--fail-on-errors`: exit non-zero if any page errors (4xx/5xx)
 - `--format <console|json|csv|html>` + `--output <file>`: choose reporter/output
