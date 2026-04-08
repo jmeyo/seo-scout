@@ -9,3 +9,5 @@ dist/
 *.csv
 !package.json
 .lighthouseci/
+*.pdf
+reports/

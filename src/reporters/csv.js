@@ -4,6 +4,11 @@ class CsvReporter {
       throw new Error('CSV export requires page-level data');
     }
 
+    const summaryMode = Boolean(options.summary);
+    const maxPages = Number.isInteger(options.maxPages) && options.maxPages > 0
+      ? options.maxPages
+      : null;
+
     const headers = [
       'URL',
       'Status',
@@ -24,7 +29,22 @@ class CsvReporter {
 
     const rows = [headers];
 
-    for (const page of results.pages) {
+    let pages = results.pages;
+    if (summaryMode) {
+      pages = pages.filter(page => {
+        if (!page || !page.meta || page.meta.error) {
+          return true;
+        }
+        const checks = page.checks || { errors: [], warnings: [] };
+        return checks.errors.length > 0 || checks.warnings.length > 0;
+      });
+    }
+
+    if (maxPages) {
+      pages = pages.slice(0, maxPages);
+    }
+
+    for (const page of pages) {
       const { url, meta, checks, structuredData, lastmod } = page;
 
       if (meta.error) {
