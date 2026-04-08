@@ -8,6 +8,7 @@ const ConsoleReporter = require('./reporters/console');
 const JsonReporter = require('./reporters/json');
 const CsvReporter = require('./reporters/csv');
 const HtmlReporter = require('./reporters/html');
+const PdfReporter = require('./reporters/pdf');
 const path = require('path');
 
 class SeoScout {
@@ -30,8 +31,24 @@ class SeoScout {
       console: new ConsoleReporter(),
       json: new JsonReporter(),
       csv: new CsvReporter(),
-      html: new HtmlReporter()
+      html: new HtmlReporter(),
+      pdf: new PdfReporter()
     };
+  }
+
+  resolveSitemapUrl(inputUrl) {
+    if (inputUrl.endsWith('.xml')) {
+      return inputUrl;
+    }
+
+    // Default to root sitemap of the host (origin), even if the input
+    // URL is a deep page (e.g. /de/calendar/show).
+    try {
+      const urlObj = new URL(inputUrl);
+      return new URL('/sitemap.xml', urlObj).toString();
+    } catch (error) {
+      return `${inputUrl.replace(/\/$/, '')}/sitemap.xml`;
+    }
   }
 
   loadConfig() {
@@ -74,7 +91,7 @@ class SeoScout {
         pages = [{ url, loc: url }];
       } else {
         // Parse sitemap
-        const sitemapUrl = url.endsWith('.xml') ? url : `${url}/sitemap.xml`;
+        const sitemapUrl = this.resolveSitemapUrl(url);
         pages = await this.sitemapAnalyzer.parse(sitemapUrl);
       }
 
@@ -164,7 +181,7 @@ class SeoScout {
   }
 
   async listPages(url) {
-    const sitemapUrl = url.endsWith('.xml') ? url : `${url}/sitemap.xml`;
+    const sitemapUrl = this.resolveSitemapUrl(url);
     return this.sitemapAnalyzer.parse(sitemapUrl);
   }
 
